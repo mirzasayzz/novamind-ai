@@ -8,10 +8,15 @@
 
 Built with React Native. Chat with AI two ways: fully offline with models that live on your phone, or through the cloud via any OpenAI-compatible endpoint. Your conversations, your rules.
 
+[![Latest APK](https://img.shields.io/badge/Download-Android%20APK-22c55e.svg)](https://github.com/mirzasayzz/novamind-ai/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-14b8a6.svg)](#-get-started)
 [![Made with React Native](https://img.shields.io/badge/Made%20with-React%20Native-61dafb.svg)](https://reactnative.dev)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-14b8a6.svg)](https://github.com/mirzasayzz/novamind-ai/fork)
+
+<img src="doc/screenshots/chat.jpg" alt="NovaMind AI chat running a local model on-device" width="270" /> <img src="doc/screenshots/models.jpg" alt="Model manager downloading GGUF models in the background" width="270" /> <img src="doc/screenshots/drawer.jpg" alt="Navigation drawer" width="270" />
+
+*Real captures from a running build: on-device chat with live token stats, background model downloads, and the navigation drawer.*
 
 </div>
 
@@ -30,6 +35,14 @@ Most AI apps make a choice for you: either everything goes to someone else's ser
 - **📊 Benchmarks** — measure tokens/sec and memory use on your hardware.
 - **⚡ Hardware accelerated** — CPU, GPU (Metal on iOS, OpenCL/Adreno on Android) and NPU (Hexagon) inference paths.
 - **🌍 Localized** — 11 languages, phones and tablets, full iPad support.
+
+## Screenshots
+
+<div align="center">
+<img src="doc/screenshots/onboarding.jpg" alt="Guided onboarding and pal matching" width="250" /> <img src="doc/screenshots/privacy.jpg" alt="Privacy promise screen: nothing leaves your phone" width="250" /> <img src="doc/screenshots/about.jpg" alt="About screen with build info" width="250" />
+
+<sub>Guided onboarding with pal matching, the privacy promise, and the About screen.</sub>
+</div>
 
 ## Architecture
 
