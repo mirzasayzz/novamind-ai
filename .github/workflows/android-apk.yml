@@ -135,8 +135,8 @@ jobs:
           APK=android/app/build/outputs/apk/prod/release/app-prod-release.apk
           test -f "$APK" || { echo "::error::APK not found at $APK"; exit 1; }
           cp "$APK" "NovaMind-v${VERSION}-arm64.apk"
-          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
-          gh release create latest \
+          gh release delete "v${VERSION}" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "v${VERSION}" \
             --title "NovaMind AI v${VERSION} (Latest Build)" \
             --notes "Automated debug-signed APK built from \`main\` (commit ${GITHUB_SHA::7}).
 
