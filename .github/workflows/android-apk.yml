@@ -138,7 +138,6 @@ jobs:
           gh release delete latest --yes --cleanup-tag 2>/dev/null || true
           gh release create latest \
             --title "NovaMind AI v${VERSION} (Latest Build)" \
-            --prerelease \
             --notes "Automated debug-signed APK built from \`main\` (commit ${GITHUB_SHA::7}).
 
           **Install:** download the APK, open it on your Android phone, and allow installs from your browser or file manager when prompted.
