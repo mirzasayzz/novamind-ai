@@ -5,10 +5,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "src/**"
-      - "android/**"
-      - "package.json"
-      - "yarn.lock"
+      - "**"
+      - "!.github/workflows/ci.yml"
+      - "!.github/workflows/e2e-tests.yml"
+      - "!.github/workflows/l10n-upload.yml"
+      - "!.github/workflows/release.yml"
 
 concurrency:
   group: android-apk-${{ github.ref }}
