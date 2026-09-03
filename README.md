@@ -78,22 +78,6 @@ AGENTROUTER_API_KEY=your-key-here
 
 Keys live only in your `.env` and the device Keychain, never in the codebase. Point `AGENTROUTER_BASE_URL` at OpenAI, Groq, Ollama, LM Studio, llama.cpp server, vLLM or anything else that speaks the OpenAI protocol.
 
-## Contributing
-
-Issues and PRs are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-
-## Acknowledgements
-
-NovaMind is built on the shoulders of giants:
-
-- [PocketPal AI](https://github.com/a-ghorbani/pocketpal-ai) by Asghar Ghorbani, the on-device AI foundation this project began from (MIT)
-- [llama.cpp](https://github.com/ggml-org/llama.cpp) and [llama.rn](https://github.com/mybigday/llama.rn) for the inference engine and JSI bridge
-- The React Native, MobX, WatermelonDB and React Native Paper communities
-
-## License
-
-[MIT](LICENSE) © 2026 Tuba Mirza (mirzasayzz). PocketPal AI remains © its original author under MIT.
-
 <div align="center">
 <sub>Made with React Native. If NovaMind is useful to you, consider giving it a ⭐ — it helps others find the project.</sub>
 </div>
