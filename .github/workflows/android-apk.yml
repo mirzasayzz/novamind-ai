@@ -1,0 +1,123 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "android/**"
+      - "package.json"
+      - "yarn.lock"
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      # Match release.yml: llama.rn's own gradle.properties forces a
+      # from-source build, and its postinstall prebuilt download must be off.
+      ORG_GRADLE_PROJECT_rnllamaBuildFromSource: 'true'
+      RNLLAMA_SKIP_POSTINSTALL: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Maximize build space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache
+          df -h /
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.0'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Derive rnllama variant allowlist
+        run: |
+          set -euo pipefail
+          VARIANTS=$(node scripts/verify-android-payload.js --print-variants)
+          echo "Declared allowlist: $VARIANTS"
+          echo "ORG_GRADLE_PROJECT_rnllamaVariants=$VARIANTS" >> "$GITHUB_ENV"
+
+      - name: Create .env
+        run: |
+          cat > .env << 'EOL'
+          APP_URL=novamind://app
+          ENABLE_NOVAHUB_INTEGRATION=true
+          ENABLE_AUTHENTICATION=true
+          ENABLE_OFFLINE_MODE=true
+          AGENTROUTER_BASE_URL=${{ secrets.AGENTROUTER_BASE_URL }}
+          AGENTROUTER_API_KEY=${{ secrets.AGENTROUTER_API_KEY }}
+          EOL
+
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "::warning::GOOGLE_SERVICES_JSON secret not set; using minimal Firebase placeholder."
+            cat > android/app/google-services.json << 'JSON'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "novamind-placeholder",
+              "storage_bucket": "novamind-placeholder.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.novamind"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyA-PLACEHOLDER-0000000000000000000"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
+          else
+            echo "$GOOGLE_SERVICES_JSON" | base64 --decode > android/app/google-services.json
+          fi
+
+      - name: Build prod release APK (arm64, debug-signed)
+        working-directory: android
+        run: |
+          ./gradlew assembleProdRelease \
+            -PreactNativeArchitectures=arm64 \
+            --no-daemon --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NovaMind-APK
+          path: android/app/build/outputs/apk/prod/release/*.apk
+          if-no-files-found: error
+          retention-days: 30
