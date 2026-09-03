@@ -15,6 +15,9 @@ concurrency:
   group: android-apk-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -115,10 +118,30 @@ jobs:
             -PreactNativeArchitectures=arm64-v8a \
             --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: NovaMind-APK
           path: android/app/build/outputs/apk/prod/release/*.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish APK to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          APK=android/app/build/outputs/apk/prod/release/app-prod-release.apk
+          test -f "$APK" || { echo "::error::APK not found at $APK"; exit 1; }
+          cp "$APK" "NovaMind-v${VERSION}-arm64.apk"
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          gh release create latest \
+            --title "NovaMind AI v${VERSION} (Latest Build)" \
+            --prerelease \
+            --notes "Automated debug-signed APK built from \`main\` (commit ${GITHUB_SHA::7}).
+
+          **Install:** download the APK, open it on your Android phone, and allow installs from your browser or file manager when prompted.
+
+          arm64-v8a build, covers all modern devices." \
+            "NovaMind-v${VERSION}-arm64.apk"
